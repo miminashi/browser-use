@@ -658,6 +658,7 @@ class Tools(Generic[Context]):
 			browser_session: BrowserSession,
 			page_extraction_llm: BaseChatModel,
 			file_system: FileSystem,
+			llm_timeout: int,
 		):
 			# Constants
 			MAX_CHAR_LIMIT = 30000
@@ -751,7 +752,7 @@ You will be given a query and the markdown of a webpage that has been filtered t
 			try:
 				response = await asyncio.wait_for(
 					page_extraction_llm.ainvoke([SystemMessage(content=system_prompt), UserMessage(content=prompt)]),
-					timeout=120.0,
+					timeout=llm_timeout,
 				)
 
 				current_url = await browser_session.get_current_page_url()
@@ -1362,6 +1363,7 @@ Validated Code (after quote fixing):
 		self,
 		action: ActionModel,
 		browser_session: BrowserSession,
+		llm_timeout: int,
 		page_extraction_llm: BaseChatModel | None = None,
 		sensitive_data: dict[str, str | dict[str, str]] | None = None,
 		available_file_paths: list[str] | None = None,
@@ -1397,6 +1399,7 @@ Validated Code (after quote fixing):
 							file_system=file_system,
 							sensitive_data=sensitive_data,
 							available_file_paths=available_file_paths,
+							llm_timeout=llm_timeout,
 						)
 					except BrowserError as e:
 						logger.error(f'❌ Action {action_name} failed with BrowserError: {str(e)}')
