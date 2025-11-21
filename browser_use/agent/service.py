@@ -177,7 +177,7 @@ class Agent(Generic[Context, AgentStructuredOutput]):
 		display_files_in_done_text: bool = True,
 		include_tool_call_examples: bool = False,
 		vision_detail_level: Literal['auto', 'low', 'high'] = 'auto',
-		llm_timeout: int | None = None,
+		llm_timeout: int = 90,
 		step_timeout: int = 120,
 		directly_open_url: bool = True,
 		include_recent_events: bool = False,
@@ -2075,6 +2075,7 @@ class Agent(Generic[Context, AgentStructuredOutput]):
 					page_extraction_llm=self.settings.page_extraction_llm,
 					sensitive_data=self.sensitive_data,
 					available_file_paths=self.available_file_paths,
+					llm_timeout=self.settings.llm_timeout,
 				)
 
 				time_end = time.time()

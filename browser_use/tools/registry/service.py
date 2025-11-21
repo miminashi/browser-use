@@ -68,6 +68,7 @@ class Registry(Generic[Context]):
 			'available_file_paths': list,
 			'has_sensitive_data': bool,
 			'file_system': FileSystem,
+			'llm_timeout': int,
 		}
 
 	def _normalize_action_function_signature(
@@ -115,7 +116,7 @@ class Registry(Generic[Context]):
 					# Handle Optional types - normalize both sides
 					param_type = param.annotation
 					origin = get_origin(param_type)
-					if origin is Union:
+					if origin is Union or origin is UnionType:
 						args = get_args(param_type)
 						# Find non-None type
 						param_type = next((arg for arg in args if arg is not type(None)), param_type)
@@ -328,6 +329,7 @@ class Registry(Generic[Context]):
 		self,
 		action_name: str,
 		params: dict,
+		llm_timeout: int,
 		browser_session: BrowserSession | None = None,
 		page_extraction_llm: BaseChatModel | None = None,
 		file_system: FileSystem | None = None,
@@ -366,6 +368,7 @@ class Registry(Generic[Context]):
 				'available_file_paths': available_file_paths,
 				'has_sensitive_data': action_name == 'input' and bool(sensitive_data),
 				'file_system': file_system,
+				'llm_timeout': llm_timeout,
 			}
 
 			# Only pass sensitive_data to actions that explicitly need it (input)
