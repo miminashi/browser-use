@@ -1790,6 +1790,21 @@ class Agent(Generic[Context, AgentStructuredOutput]):
 			await self._demo_mode_log(error_msg, 'error', {'step': step + 1})
 			self.state.consecutive_failures += 1
 			self.state.last_result = [ActionResult(error=error_msg)]
+			# Add the timeout error to history so it's accessible via history.errors()
+			self.history.add_item(
+				AgentHistory(
+					model_output=None,
+					result=[ActionResult(error=error_msg, include_in_memory=True)],
+					state=BrowserStateHistory(
+						url='',
+						title='',
+						tabs=[],
+						interacted_element=[],
+						screenshot_path=None,
+					),
+					metadata=None,
+				)
+			)
 
 		if on_step_end is not None:
 			await on_step_end(self)
