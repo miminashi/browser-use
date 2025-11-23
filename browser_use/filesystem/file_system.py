@@ -441,13 +441,18 @@ class FileSystem:
 			return f"Error: Could not write to file '{full_filename}'. {str(e)}"
 
 	async def append_file(self, full_filename: str, content: str) -> str:
-		"""Append content to file using file-specific append method"""
+		"""Append content to file using file-specific append method. Creates file if it doesn't exist."""
 		if not self._is_valid_filename(full_filename):
 			return INVALID_FILENAME_ERROR_MESSAGE
 
 		file_obj = self.get_file(full_filename)
 		if not file_obj:
-			return f"File '{full_filename}' not found."
+			# Auto-create file if it doesn't exist (matches standard Python 'a' mode behavior)
+			create_result = await self.write_file(full_filename, content)
+			# Check if creation was successful
+			if create_result.startswith('Error:'):
+				return create_result
+			return f'File {full_filename} created and content written successfully.'
 
 		try:
 			await file_obj.append(content, self.data_dir)

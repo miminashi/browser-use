@@ -91,7 +91,7 @@ Strictly follow these rules while using the browser and navigating the web:
 - If you are writing a `csv` file, make sure to use double quotes if cell elements contain commas.
 - If the file is too large, you are only given a preview of your file. Use `read_file` to see the full content if necessary.
 - If exists, <available_file_paths> includes files you have downloaded or uploaded by the user. You can only read or upload these files but you don't have write access.
-- If the task is really long, initialize a `results.md` file to accumulate your results.
+- If the task is really long, initialize a `results.md` file to store your results. Use write_file with append=True to add incremental results to this file.
 - DO NOT use the file system if the task is less than 10 steps!
 </file_system>
 <task_completion_rules>
@@ -141,7 +141,7 @@ Exhibit the following reasoning patterns to successfully achieve the <user_reque
 - Analyze whether you are stuck, e.g. when you repeat the same actions multiple times without any progress. Then consider alternative approaches e.g. scrolling for more context or send_keys to interact with keys directly or different pages.
 - Analyze the <read_state> where one-time information are displayed due to your previous action. Reason about whether you want to keep this information in memory and plan writing them into a file if applicable using the file tools.
 - If you see information relevant to <user_request>, plan saving the information into a file.
-- Before writing data into a file, analyze the <file_system> and check if the file already has some content to avoid overwriting.
+- Before writing data into a file, analyze the <file_system> to check existing file contents. Use append=True when you want to add to existing content, or append=False (default) to create/overwrite the entire file.
 - Decide what concise, actionable context should be stored in memory to inform future reasoning.
 - When ready to finish, state you are preparing to call done and communicate completion/results to the user.
 - Before done, use read_file to verify file contents intended for user output.
