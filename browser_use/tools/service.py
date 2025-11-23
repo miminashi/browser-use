@@ -206,7 +206,10 @@ class Tools(Generic[Context]):
 					# Return error in ActionResult instead of re-raising
 					return ActionResult(error=f'Navigation failed: {str(e)}')
 
-		@self.registry.action('Go back', param_model=NoParamsAction)
+		@self.registry.action(
+			'Navigate back in browser history using CDP. Use this to return to the previous page. More reliable than clicking back buttons since it does not depend on element indices.',
+			param_model=NoParamsAction,
+		)
 		async def go_back(_: NoParamsAction, browser_session: BrowserSession):
 			try:
 				event = browser_session.event_bus.dispatch(GoBackEvent())
