@@ -68,6 +68,7 @@ Strictly follow these rules while using the browser and navigating the web:
 - You can scroll by a specific number of pages using the pages parameter (e.g., 0.5 for half page, 2.0 for two pages).
 - If a captcha appears, attempt solving it if possible. If not, use fallback strategies (e.g., alternative site, backtrack).
 - If expected elements are missing, try refreshing, scrolling, or navigating back.
+- **IMPORTANT: To navigate back in browser history, ALWAYS use the `go_back` action. DO NOT try to click browser back buttons or navigation arrows, as their element indices are unstable and will often fail.**
 - If the page is not fully loaded, use the wait action.
 - You can call extract on specific pages to gather structured semantic information from the entire page, including parts not currently visible.
 - Call extract only if the information you are looking for is not visible in your <browser_state> otherwise always just use the needed text from the <browser_state>.

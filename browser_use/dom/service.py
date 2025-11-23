@@ -235,13 +235,27 @@ class DomService:
 			)
 			ax_tree_requests.append(ax_tree_request)
 
-		# Wait for all requests to complete
-		ax_trees = await asyncio.gather(*ax_tree_requests)
+		# Wait for all requests to complete, continuing even if some fail
+		# Use return_exceptions=True to handle frames that may have been destroyed during navigation
+		ax_trees_or_exceptions = await asyncio.gather(*ax_tree_requests, return_exceptions=True)
 
-		# Merge all AX nodes into a single array
+		# Merge all AX nodes into a single array, skipping frames that failed
 		merged_nodes: list[AXNode] = []
-		for ax_tree in ax_trees:
-			merged_nodes.extend(ax_tree['nodes'])
+		failed_frames = 0
+		for i, result in enumerate(ax_trees_or_exceptions):
+			if isinstance(result, Exception):
+				# Frame was destroyed or unavailable - skip it
+				failed_frames += 1
+				self.logger.debug(
+					f'Skipping accessibility tree for frame {all_frame_ids[i]}: {type(result).__name__}: {result}'
+				)
+			elif isinstance(result, dict) and 'nodes' in result:
+				merged_nodes.extend(result['nodes'])
+
+		if failed_frames > 0:
+			self.logger.debug(
+				f'Successfully retrieved accessibility trees for {len(ax_trees_or_exceptions) - failed_frames}/{len(ax_trees_or_exceptions)} frames'
+			)
 
 		return {'nodes': merged_nodes}
 
